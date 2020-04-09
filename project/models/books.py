@@ -10,19 +10,20 @@ class BooksModel(db.Model):
     genre = db.Column(db.String(50))
     user_id = db.Column(db.Integer)
 
-    def __init__(self,title,amazon_url,author,genre):
+    def __init__(self,title,amazon_url,author,genre,user_id):
         self.title= title
         self.amazon_url = amazon_url
         self.author = author
         self.genre = genre
+        self.user_id = user_id
 
     @classmethod
     def find_by_name(cls, title):
         return cls.query.filter_by(title=title).first()
 
     @classmethod
-    def find_by_id(cls, id):
-        return cls.query.filter_by(id=id).first()
+    def find_by_user_id(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).all()
 
 
     def save_to_db(self):

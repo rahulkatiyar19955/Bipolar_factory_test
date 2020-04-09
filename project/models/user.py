@@ -1,4 +1,5 @@
 from project import db
+from flask import jsonify
 
 class UserModel(db.Model):
     __table_name__ = 'Users'
@@ -27,3 +28,4 @@ class UserModel(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+

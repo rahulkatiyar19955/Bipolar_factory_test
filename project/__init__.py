@@ -4,16 +4,21 @@ from flask_jwt_extended import JWTManager
 
 import datetime
 
-'''initializing objects'''
+'''initializing application object'''
 app = Flask(__name__)
-db = SQLAlchemy(app)
-jwt_obj = JWTManager(app)
+
 
 '''app configuration'''
 app.config['SECRET_KEY'] = 'THISISHIDDEN'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes=1)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes=2)
 
-'''route import'''
+'''initializing database object'''
+db = SQLAlchemy(app)
+
+'''initializing jwt object'''
+jwt_obj = JWTManager(app)
+
+'''routes import'''
 from project.routes import Routes
