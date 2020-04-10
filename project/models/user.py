@@ -15,6 +15,13 @@ class UserModel(db.Model):
     def find_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
 
+    def user_exist(self):
+        temp = UserModel.query.filter_by(username=self.username).first()
+        if temp is not None:
+            return True
+        else:
+            return False
+
     def verify_user(self,password):
         if self.password == password:
             return True
