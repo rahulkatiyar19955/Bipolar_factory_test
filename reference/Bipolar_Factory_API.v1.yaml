@@ -1,0 +1,164 @@
+openapi: 3.0.0
+info:
+  title: Bipolar_Factory_API
+  version: '1.0'
+  description: 'Rest API with JWT and CRUD operation '
+  contact:
+    name: Rahul Katiyar
+    email: rahulkatiyar1995@gmail.com
+servers:
+  - url: 'https://bipolar-factory-test.herokuapp.com/'
+paths:
+  login:
+    post:
+      summary: Login Endpoint
+      operationId: post-login
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "'message'":
+                    type: string
+                  "'access_token'":
+                    type: string
+                  "'refresh_token'":
+                    type: string
+      description: Endpoint for login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+            examples:
+              example-1:
+                value:
+                  username: user1
+                  password: pass
+        description: 'Use JSON format with two key fields: username & password'
+      tags:
+        - Login
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Content-Type
+          required: true
+          description: |-
+            for sending json data in the body part
+            set it to application/json
+    parameters: []
+  reauthenticate:
+    parameters: []
+    post:
+      summary: Endpoint to obtain access token
+      operationId: postreauthenticate
+      responses:
+        '200':
+          description: OK
+      tags:
+        - Reauthenticate
+      description: 'This endpoint is used to get access token when it it expired without username and password, we just need refresh token.'
+  register:
+    parameters: []
+    post:
+      summary: ''
+      operationId: postregister
+      responses:
+        '200':
+          description: OK
+      tags:
+        - SignUp
+      description: This endpoint is used to register a user.
+  favourite_book:
+    get:
+      summary: Retrieval of books
+      tags:
+        - Books
+      responses: {}
+      operationId: get-favourite_book
+      description: "Getting the list of user's favourite books"
+    post:
+      summary: Adding a book
+      operationId: post-favourite_book
+      responses:
+        '200':
+          description: OK
+      description: "Adding a book to user's favourite book list"
+      tags:
+        - Books
+    put:
+      summary: Updating a book
+      operationId: put-favourite_book
+      responses:
+        '200':
+          description: OK
+      description: "Update attribute of a book present in user's favourite book list"
+      tags:
+        - Books
+    delete:
+      summary: Deletion of a book
+      operationId: delete-favourite_book
+      responses:
+        '200':
+          description: OK
+      description: "Deleting a book from user's favourite book list"
+      tags:
+        - Books
+    parameters: []
+components:
+  schemas:
+    UserModel:
+      title: UserModel
+      type: object
+      description: Contains Information of Users
+      properties:
+        id:
+          type: number
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+      required:
+        - username
+        - password
+      x-tags:
+        - Models
+    BooksModel:
+      title: BooksModel
+      type: object
+      description: Contains information about Books
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        amazon_url:
+          type: string
+        author:
+          type: string
+        genre:
+          type: string
+        user_id:
+          type: integer
+      required:
+        - title
+        - amazon_url
+        - author
+        - genre
+        - user_id
+      x-tags:
+        - Models
+  securitySchemes: {}
