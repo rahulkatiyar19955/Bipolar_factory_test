@@ -27,6 +27,25 @@ paths:
                     type: string
                   "'refresh_token'":
                     type: string
+              examples:
+                example-1:
+                  value:
+                    access_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODY1MzQ2OTYsIm5iZiI6MTU4NjUzNDY5NiwianRpIjoiYWE5ODdmMmUtYmFkMS00OTZlLWFmZjQtNDliYWQ5MTVkMzJiIiwiZXhwIjoxNTg2NTM0OTk2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXI0IiwiaWQiOjF9LCJmcmVzaCI6dHJ1ZSwidHlwZSI6ImFjY2VzcyJ9.if7XVj7RUxS9D26_80A5_cXsMi7Iuk88XqJDawuxSxs
+                    message: Login Successful
+                    refresh_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODY1MzQ2OTYsIm5iZiI6MTU4NjUzNDY5NiwianRpIjoiNThiY2M0NjQtMWQ5Mi00MmViLWJlZWUtZTMzY2M5ZTasU3NDU3IiwiZXhwIjoxNTg5MTI2Njk2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXI0IiwiaWQiOjF9LCJ0eXBlIjoicmVmcmVzaCJ9.0_-7VQXPsc14YDzqLJxYd4i3URhsaU7hiyI1p8yhgM8
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    message: Login Unsuccessful
       description: Endpoint for login
       requestBody:
         content:
@@ -67,55 +86,333 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  message:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    access_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODY1MzQ2MTMsIm5iZiI6MTU4NjUzNDYxMywianRpIjoiMDQ0ZDlkYjItY2E5MS00YzhmLTkwNjEtODVlMzQ4YjI0MTBlIiwiZXhwIjoxNTg2NTM0OTEzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXI0IiwiaWQiOjF9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.Mp1wBFhMtv1LxoQZoOUSV2QUgPD3eP1HW_RhB9mLtYg
+                    message: Successful Creating of access token
       tags:
         - Reauthenticate
       description: 'This endpoint is used to get access token when it it expired without username and password, we just need refresh token.'
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          description: 'Bearer {refresh token}'
   register:
     parameters: []
     post:
-      summary: ''
+      summary: Register a User in the database
       operationId: postregister
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  username:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    message: Created Successfully
+                    username: user4
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    message: Username already exist
       tags:
         - SignUp
       description: This endpoint is used to register a user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+            examples:
+              example-1:
+                value:
+                  username: user4
+                  password: pass
+        description: Wrtie the username and password in json format
   favourite_book:
     get:
       summary: Retrieval of books
       tags:
         - Books
-      responses: {}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  amazon_url:
+                    type: string
+                  author:
+                    type: string
+                  book_id:
+                    type: integer
+                  genre:
+                    type: string
+                  title:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    list_of_books:
+                      - amazon_url: 'https://amazon.in2'
+                        author: rahul2
+                        book_id: 1
+                        genre: fantasy2
+                        title: book1
+                      - amazon_url: 'https://amazon.in2'
+                        author: rahul2
+                        book_id: 2
+                        genre: fantasy2
+                        title: book2
       operationId: get-favourite_book
       description: "Getting the list of user's favourite books"
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          description: 'Bearer {access token}'
+          required: true
+      security: []
     post:
       summary: Adding a book
       operationId: post-favourite_book
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  title:
+                    type: string
+              examples:
+                example:
+                  value:
+                    message: added successful
+                    title: book3
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    message: Book with same title already exist
+                example-2:
+                  value:
+                    message: error occured
       description: "Adding a book to user's favourite book list"
       tags:
         - Books
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          description: 'Bearer {access token}'
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                amazon_url:
+                  type: string
+                author:
+                  type: string
+                genre:
+                  type: string
+              required:
+                - title
+                - amazon_url
+                - author
+                - genre
+            examples:
+              example-1:
+                value:
+                  title: book3
+                  amazon_url: 'https://amazon.in2'
+                  author: rahul2
+                  genre: fantasy2
+        description: Enter the detail in json format
     put:
       summary: Updating a book
       operationId: put-favourite_book
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    message: update book successful
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    message: Book with the Given Id is not found
       description: "Update attribute of a book present in user's favourite book list"
       tags:
         - Books
+      parameters:
+        - schema:
+            type: string
+          in: header
+          description: 'Bearer {access token}'
+          name: Authorization
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                amazon_url:
+                  type: string
+                author:
+                  type: string
+                genre:
+                  type: string
+                book_id:
+                  type: integer
+              required:
+                - title
+                - amazon_url
+                - author
+                - genre
+                - book_id
+            examples:
+              example-1:
+                value:
+                  title: bronze
+                  amazon_url: 'htsasdtps://amazon.in2'
+                  author: qwer
+                  genre: asdf
+                  book_id: 3
     delete:
       summary: Deletion of a book
       operationId: delete-favourite_book
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    message: deletion of book Successful
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    message: No book found with the given Book_Id
+                example-2:
+                  value:
+                    message: deletion of book Unsuccessful
       description: "Deleting a book from user's favourite book list"
       tags:
         - Books
+      parameters:
+        - schema:
+            type: string
+          in: header
+          description: 'Bearer {access token}'
+          name: Authorization
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                book_id:
+                  type: integer
+              required:
+                - book_id
+            examples:
+              example-body_json:
+                value:
+                  book_id: 3
     parameters: []
 components:
   schemas:
@@ -161,4 +458,5 @@ components:
         - user_id
       x-tags:
         - Models
+      x-examples: {}
   securitySchemes: {}
