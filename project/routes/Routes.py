@@ -1,3 +1,4 @@
+# all import
 from flask import request, jsonify
 from flask_jwt_extended import jwt_required, jwt_refresh_token_required, fresh_jwt_required
 from flask_jwt_extended import get_jwt_identity, create_access_token, create_refresh_token
@@ -6,16 +7,22 @@ from project.models.user import UserModel
 from project.models.books import BooksModel
 
 
+# root endpoint
+# this is used to check whether the API is working or not
 @app.route('/')
 def index():
     return jsonify({'message': "The API is working : Root Endpoint"}), 200
 
 
+# before getting the first we create the empty table with all the models present in the database
 @app.before_first_request
 def init_database():
     db.create_all()
 
 
+# login endpoint: using POST method
+# this is used to login a user
+# username and password must be there in the request body
 @app.route('/login', methods=['POST'])
 def login():
     data_received = request.get_json()
@@ -33,6 +40,9 @@ def login():
     return jsonify({'message': "Login Unsuccessful"}), 401
 
 
+# endpoint to regenerate access token once it is expired
+# this require refresh token in the authorization header
+# this will return a access token
 @app.route('/reauthenticate', methods=['POST'])
 @jwt_refresh_token_required
 def reauthenticate():
@@ -42,6 +52,9 @@ def reauthenticate():
                     'access_token': access_token}), 200
 
 
+# this endpoint is used to register a user in the database
+# this request must have username and password in the request's Body
+# this will return http error code 400 if there is user already present with the username provided in the request
 @app.route('/register', methods=['POST'])
 def create_user():
     data_received = request.get_json()
@@ -50,9 +63,13 @@ def create_user():
         return jsonify({'message': "Username already exist"}), 400
     new_user.save_to_db()
     return jsonify({'message': "Created Successfully",
-                    "username":data_received['username']}), 200
+                    "username": data_received['username']}), 200
 
 
+# this is POST request to add new book in the user's favourite book list
+# this request must have title, amazon_url, author, genre
+# this will return http error code 400 if a book with the given title already exist
+# Fresh or non-fresh JWT token is required for this request
 @app.route('/favourite_book', methods=['POST'])
 @jwt_required
 def adding_book():
@@ -70,11 +87,13 @@ def adding_book():
             new_book.save_to_db()
         except:
             return jsonify({'message': "error occured"}), 400
-
     return jsonify({'message': "added successful",
-                    "title":title}), 200
+                    "title": title}), 200
 
 
+# This is a GET request
+# this will return a list of all the favourite book of the user
+# Fresh or non-fresh JWT token is required for this request
 @app.route('/favourite_book', methods=['GET'])
 @jwt_required
 def list_book():
@@ -92,6 +111,11 @@ def list_book():
     return jsonify({'list_of_books': list_of_books}), 200
 
 
+# This is a PUT request
+# this is used to update the title or author or genre or amazon_url of the book
+# book_ID must be given in the request with all the attribute of the book along with the updated attribute
+# this will return error code 200 if it can't find a book with the given id
+# Fresh JWT token is required for this request
 @app.route('/favourite_book', methods=['PUT'])
 @fresh_jwt_required
 def update_book():
@@ -110,6 +134,10 @@ def update_book():
         return jsonify({'message': "Book with the Given Id is not found"}), 404
 
 
+# This is a DELETE request
+# this is used to delete a book from the user's favourite book list
+# this will return error code 404 if the book with the given ID is not found
+# Fresh or non-fresh JWT token is required for this request
 @app.route('/favourite_book', methods=['DELETE'])
 @fresh_jwt_required
 def delete_book():
